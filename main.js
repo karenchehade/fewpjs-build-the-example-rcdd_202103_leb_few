@@ -1,37 +1,32 @@
-const glyphStates = {
-  "♡": "♥",
-  "♥": "♡"
-};
+const FULL_HEART = '♥'
 
-const colorStates = {
-  "red" : "",
-  "": "red"
-};
 
-const articleHearts = document.querySelectorAll(".like-glyph");
+let like = document.getElementsByClassName('like-glyph');
+let error = document.getElementById('modal');
+let modalMessage = document.getElementById('modal-message');
 
-function like(e) {
-  const heart = e.target;
+for (let i=0;i<like.length;i++){
+  like[i].addEventListener('click',function(e){
+    mimicServerCall()
+    .then((response)=>{
+      if(like.innerHTML === `${FULL_HEART}`)
+      {
+        like.innerHTML = `${EMPTY_HEART}`;
+        like.classList.remove("activate-heart");
+      } else {
+        like.innerHTML = `${FULL_HEART}`;
+        like.classList.add("activate-heart");
+      }
 
-  mimicServerCall()
-    .then(function(serverMessage){
-       heart.innerText = glyphStates[heart.innerText];
-       heart.style.color = colorStates[heart.style.color];
     })
-    .catch(function(error) {
-      const modal = document.getElementById("modal");
-      // modal.className = "";
-      modal.innerText = error;
-      setTimeout(()=>modal.className="hidden",3000);
-    });
+    .catch(()=>{
+      error.classList.remove('hidden');
+      modalMessage.insertAdjacentHTML('beforeend',`${error.message}`);
+      modalMessage.classList.remove('hidden');
+      let timeoutID = window.setTimeout(modalMessage.classList.add('hidden'),3000);
+  })
+  })
 }
-
-for (const i  of articleHearts) {
-  i.addEventListener("click", like);
-}
-
-
-
 //------------------------------------------------------------------------------
 // Don't change the code below: this function mocks the server response
 //------------------------------------------------------------------------------
